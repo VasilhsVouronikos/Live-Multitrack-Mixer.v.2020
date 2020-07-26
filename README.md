@@ -1,4 +1,4 @@
-# Live_Multitrack_Mixer-Complete
+# Live_Multitrack_Mixer.v.2020
 
 Live multritrack mixer is an audio software tha allows you to mix up to 32 separate channels with volume and panning control.<br>
 The software is pretty simple and easy to use.<br>

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import gui_helper.MainPageHelper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,6 +14,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -152,13 +156,60 @@ public class Channel {
 			 */
 				loadcp.setPrefSize(32, 32);
 				setButtonImageView(loadcp,"/load.png");
+				if(playOn==false) {
+					loadcp.setOnDragOver(new EventHandler<DragEvent>() {
+	
+			            @Override
+			            public void handle(DragEvent event) {
+			                if (event.getGestureSource() != loadcp
+			                        && event.getDragboard().hasFiles()) {
+			                    /* allow for both copying and moving, whatever user chooses */
+			                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+			                }
+			                event.consume();
+			            }
+			        });
+					loadcp.setOnDragDropped(new EventHandler<DragEvent>() {
+
+			            @Override
+			            public void handle(DragEvent event) {
+			                Dragboard db = event.getDragboard();
+			                boolean success = false;
+			                if (db.hasFiles()) {
+			                	File file = db.getFiles().get(0);
+			                	clippath=file.toURI().toString();
+			                    success = true;
+			                   
+								con.load(clippath);
+								song_Name=songName(clippath);
+								sname=true;
+								status="loaded";
+								t.setText("Song:"+song_Name+"\n"+"Status:"+status+"\n"
+										+"Vol:"+vol+"\n"+"Dur:"+dur+"\n"+"ID:"+id+"\n");
+								mixdata=con.saveInitMix(clippath,song_Name,id);
+								loaded++;
+			                }
+			                /* let the source know whether the string was successfully 
+			                 * transferred and used */
+			                event.setDropCompleted(success);
+
+			                event.consume();
+			            }
+			        });
+				}
+				else {
+					Alert a=new Alert(AlertType.ERROR);
+					a.setTitle("Live_Multitrack_Mixer");
+					a.setContentText("Another track is played,stop the current track first!!");
+					a.showAndWait();
+				}
 				loadcp.setOnAction(e->{
 					if(playOn==false) {
 						FileChooser filech=new FileChooser();
 						filech.setTitle("load audio file");
 						filech.getExtensionFilters().addAll(
-								new FileChooser.ExtensionFilter("WAV", "*.wav"),
-								new FileChooser.ExtensionFilter("MP3", "*.mp3"));
+								new FileChooser.ExtensionFilter("MP3", "*.mp3"),
+								new FileChooser.ExtensionFilter("WAV", "*.wav"));				
 						File file=filech.showOpenDialog(stage);
 						if(file!=null){
 							clippath=file.toURI().toString();
@@ -203,8 +254,10 @@ public class Channel {
 					playOn=false;
 					t.setText("Song:"+song_Name+"\n"+"Status:"+status+"\n"
 							+"Vol:"+vol+"\n"+"Dur:"+dur+"\n"+"ID:"+id+"\n");
+					
+	
 				}
-				
+			
 			
 		});
 		return stopcp;
@@ -281,25 +334,28 @@ public class Channel {
 				ArrayList<String> time=manager.update(curtime);
 				dur="00"+":"+
 						time.get(2)+time.get(3)+":"+time.get(4)+time.get(5);
+				
 					
 				if(!con.isplayed()){
 						status="play";
 						t.setText("Song:"+song_Name+"\n"+"Status:"+status+"\n"
 								+"Vol:"+vol+"\n"+"Dur:"+dur+"\n"+"ID:"+id+"\n");
-						setButtonImageView(playcp,"/playf.png");
+						setButtonImageView(playcp,"/pause.png");
 				}
 				else{
 					status="pause";
 					playOn=false;
 					t.setText("Song:"+song_Name+"\n"+"Status:"+status+"\n"
 							+"Vol:"+vol+"\n"+"Dur:"+dur+"\n"+"ID:"+id+"\n");
-					setButtonImageView(playcp,"/pause.png");
+					setButtonImageView(playcp,"/playf.png");
 						
 					}
 				}
 		});
 		return playcp;
 	}
+	
+	
 ///////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////

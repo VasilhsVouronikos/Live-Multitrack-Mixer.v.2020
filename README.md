@@ -15,7 +15,7 @@ with the slots where you can open a song.
 For each channel you have volume and pan control and also<br>
 in the audio slots you have the basic controls of start,stop etc.
 
-##Update
+##Update<br>
 Feature added: opening song with drug and drop
 
 

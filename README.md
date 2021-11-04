@@ -18,6 +18,6 @@ in the audio slots you have the basic controls of start,stop etc.
 ## Update<br>
 Feature added: opening song with drug and drop
 
-![sneak pic](https://github.com/VasilhsVouronikos/PureMSound/blob/main/pics/Ddrive.JPG?raw=true)
+![sneak pic](https://github.com/VasilhsVouronikos/Live-Multitrack-Mixer.v.2020/blob/master/pics/lmm.JPG?raw=true)
 
 
